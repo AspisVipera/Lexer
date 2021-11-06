@@ -79,7 +79,8 @@ namespace Lexer
                 },
                 new Token.Name[]
                 {
-                    Token.Name.CLOSINGBRACKET
+                    Token.Name.CLOSINGBRACKET,
+                    Token.Name.SEMICOLON
                 },
                 Token.Name.VARLIST),
 
