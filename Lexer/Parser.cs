@@ -10,14 +10,14 @@ namespace Lexer
         {
             public Rule(Token.Name[] stack, Token.Name[] input, Token.Name output)
             {
-                this.stack  = stack;
-                this.input  = input;
-                this.output = output;
+                this.Stack  = stack;
+                this.Input  = input;
+                this.Output = output;
             }
 
-            public Token.Name[] stack  { get; }
-            public Token.Name[] input  { get; }
-            public Token.Name   output { get; }
+            public Token.Name[] Stack  { get; }
+            public Token.Name[] Input  { get; }
+            public Token.Name Output { get; }
         }
 
         private static readonly Rule[] rules =
@@ -406,7 +406,7 @@ namespace Lexer
                 Token.Name.CONDITION)
         };
 
-        static public Token Run(IEnumerable<Token> input)
+        public static Token Run(IEnumerable<Token> input)
         {
             var stack = new Stack<Token>();
             var queue = new Queue<Token>(input);
@@ -414,20 +414,20 @@ namespace Lexer
             for (;;)
             {
                 var rule = rules
-                    .Cast<Rule?>()
                     .Where(rule =>
                         stack
-                            .Take(rule.Value.stack.Length)
+                            .Take(rule.Stack.Length)
                             .Select(token => token.Type)
-                            .SequenceEqual(rule.Value.stack) &&
-                        (rule.Value.input == null || queue
-                            .Take(rule.Value.input.Length)
+                            .SequenceEqual(rule.Stack) &&
+                        (rule.Input == null || queue
+                            .Take(rule.Input.Length)
                             .Select(token => token.Type)
-                            .SequenceEqual(rule.Value.input)))
+                            .SequenceEqual(rule.Input)))
+                    .Cast<Rule?>()
                     .FirstOrDefault();
 
                 //shift
-                if (rule.Equals(default))
+                if (rule == null)
                 {
                     if (queue.Count == 0)
                     {
@@ -446,11 +446,11 @@ namespace Lexer
                     DebugWriteState(stack, queue);
 
                     var token = new Token(
-                        rule.Value.output,
+                        rule.Value.Output,
                         null,
-                        new List<Token>(stack.Take(rule.Value.stack.Length)));
+                        new List<Token>(stack.Take(rule.Value.Stack.Length)));
 
-                    for (int i = 0; i < rule.Value.stack.Length; ++i)
+                    for (int i = 0; i < rule.Value.Stack.Length; ++i)
                     {
                         stack.Pop();
                     }
@@ -460,7 +460,7 @@ namespace Lexer
             }
         }
 
-        static private void DebugWriteState(IEnumerable<Token> stack, IEnumerable<Token> queue)
+        private static void DebugWriteState(IEnumerable<Token> stack, IEnumerable<Token> queue)
         {
             Console.Write("Stack: ");
             foreach (Token.Name name in stack.Select(token => token.Type))
@@ -477,17 +477,17 @@ namespace Lexer
             Console.WriteLine('\n');
         }
 
-        static private void DebugWriteRule(Rule rule)
+        private static void DebugWriteRule(Rule rule)
         {
-            foreach (Token.Name name in rule.stack)
+            foreach (Token.Name name in rule.Stack)
             {
                 Console.Write(name.ToString() + ' ');
             }
 
-            Console.WriteLine("=> " + rule.output.ToString());
+            Console.WriteLine("=> " + rule.Output.ToString());
         }
 
-        static private void DebugWriteShift(Token token) =>
+        private static void DebugWriteShift(Token token) =>
             Console.WriteLine("Shift << " + token.Type.ToString());
     }
 }
