@@ -6,7 +6,7 @@ namespace Lexer
 {
     static class Lexer
     {
-        static public List<Token> Run(string input)
+        public static List<Token> Run(string input)
         {
             var tokens = new List<Token>();
             var stack = new Stack<char>();
@@ -17,7 +17,7 @@ namespace Lexer
                 {
                     if (stack.Count != 0)
                     {
-                        tokens.Add(ReduceLetterToken(new String(stack.Reverse().ToArray())));
+                        tokens.Add(ReduceLetterToken(string.Join("", stack.Reverse())));
                         stack.Clear();
                     }
 
@@ -31,13 +31,13 @@ namespace Lexer
 
             if (stack.Count != 0)
             {
-                tokens.Add(ReduceLetterToken(new String(stack.Reverse().ToArray())));
+                tokens.Add(ReduceLetterToken(string.Join("", stack.Reverse())));
             }
 
             return tokens;
         }
 
-        static private Token ReduceLetterToken(string value)
+        private static Token ReduceLetterToken(string value)
         {
             Token.Name name = value switch
             {
@@ -65,7 +65,7 @@ namespace Lexer
                 (name == Token.Name.BINARYOP)) ? value : null));
         }
 
-        static private Token ReduceCharToken(char c)
+        private static Token ReduceCharToken(char c)
         {
             Token.Name name = c switch
             {

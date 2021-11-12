@@ -49,15 +49,15 @@ namespace Lexer
             CONDITION
         }
 
-        public Name Type { get; }
-        public string Value { get; }
-        public List<Token> Childs { get; }
-
-        public Token(Name type, string value, IEnumerable<Token> childs = null)
+        public Token(Name type, string value, IEnumerable<Token> children = null)
         {
             Type = type;
             Value = value;
-            Childs = (childs == null) ? null : new List<Token>(childs);
+            Children = (children == null) ? null : new List<Token>(children);
         }
+
+        public Name Type { get; }
+        public string Value { get; }
+        public List<Token> Children { get; }
     }
 }
