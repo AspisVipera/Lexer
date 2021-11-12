@@ -21,11 +21,7 @@ namespace Lexer
                         stack.Clear();
                     }
 
-                    Token nextToken = ReduceCharToken(c);
-                    if (nextToken.Type != Token.Name.SPACE || tokens.Last().Type != Token.Name.SPACE)
-                    {
-                        tokens.Add(nextToken);
-                    }
+                    tokens.Add(ReduceCharToken(c));
                 }
                 else
                 {
@@ -83,8 +79,6 @@ namespace Lexer
                 '(' => Token.Name.OPENINGBRACKET,
                 ')' => Token.Name.CLOSINGBRACKET,
                 ' ' => Token.Name.SPACE,
-                '\t' => Token.Name.SPACE,
-                '\n' => Token.Name.SPACE,
                 _ => throw new UnknownSymbolException()
             };
 

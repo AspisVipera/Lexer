@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Lexer
 {
@@ -8,10 +7,7 @@ namespace Lexer
     {
         static void Main(string[] args)
         {
-            string input = Console.In.ReadToEnd().Replace("\r", "").TrimEnd();
-            List<Token> tokens = Lexer.Run(input);
-            Token syntaxTree = Parser.Run(tokens);
-            DrawTree(syntaxTree);
+            DrawTree(Parser.Run(Lexer.Run(Console.ReadLine())));
         }
 
         static void DrawTree(Token tree, int level = 0)
