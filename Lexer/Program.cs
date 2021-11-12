@@ -7,7 +7,7 @@ namespace Lexer
     {
         static void Main(string[] args)
         {
-            DrawTree(Parser.Run(Lexer.Run(Console.In.ReadToEnd().Replace("\r", "").TrimEnd())));
+            DrawTree(Parser.Run(Lexer.Run(Console.ReadLine())));
 
         }
 

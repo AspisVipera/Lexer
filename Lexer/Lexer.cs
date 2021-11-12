@@ -8,8 +8,6 @@ namespace Lexer
     {
         static public List<Token> Run(string input)
         {
-            Console.WriteLine(input);
-
             var tokens = new List<Token>();
             var stack = new Stack<char>();
 
@@ -23,12 +21,7 @@ namespace Lexer
                         stack.Clear();
                     }
 
-                    Token nextToken = ReduceCharToken(c);
-
-                    if (nextToken.Type != Token.Name.SPACE || tokens.Last().Type != Token.Name.SPACE)
-                    {
-                        tokens.Add(nextToken);
-                    }
+                    tokens.Add(ReduceCharToken(c));
                 }
                 else
                 {
@@ -86,9 +79,7 @@ namespace Lexer
                 '(' => Token.Name.OPENINGBRACKET,
                 ')' => Token.Name.CLOSINGBRACKET,
                 ' ' => Token.Name.SPACE,
-                '\t' => Token.Name.SPACE,
-                '\n' => Token.Name.SPACE,
-                _ => throw new UnknownSymbolException(c)
+                _ => throw new UnknownSymbolException()
             };
 
             return new Token(name, name == Token.Name.CONSTANT ? c.ToString() : null);
