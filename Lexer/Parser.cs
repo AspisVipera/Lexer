@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 
 namespace Lexer
@@ -18,7 +20,7 @@ namespace Lexer
             public Token.Name[] Stack  { get; }
             public Token.Name[] Input  { get; }
             public Token.Name Output { get; }
-        }
+        } 
 
         private static readonly Rule[] rules =
         {
@@ -210,7 +212,7 @@ namespace Lexer
                     Token.Name.OPENINGBRACKET
                 },
                 null,
-                Token.Name.SUBEXPRESSION),
+                Token.Name.ATOMEXPRESSION),
 
             new Rule(
                 new Token.Name[]
@@ -218,24 +220,198 @@ namespace Lexer
                     Token.Name.OPERAND
                 },
                 null,
-                Token.Name.SUBEXPRESSION),
+                Token.Name.ATOMEXPRESSION),
 
             new Rule(
                 new Token.Name[]
                 {
-                    Token.Name.SUBEXPRESSION,
+                    Token.Name.ATOMEXPRESSION,
                     Token.Name.SPACE,
-                    Token.Name.BINARYOP,
+                    Token.Name.BINARYAND,
                     Token.Name.SPACE,
-                    Token.Name.SUBEXPRESSION
+                    Token.Name.ANDEXPRESSION
                 },
-                null,
-                Token.Name.SUBEXPRESSION),
+                new Token.Name[]
+                {
+                    Token.Name.SPACE,
+                    Token.Name.BINARYOR
+                },
+                Token.Name.ANDEXPRESSION),
 
             new Rule(
                 new Token.Name[]
                 {
-                    Token.Name.SUBEXPRESSION,
+                    Token.Name.ANDEXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYOR,
+                    Token.Name.SPACE,
+                    Token.Name.OREXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SPACE,
+                    Token.Name.BINARYEQU
+                },
+                Token.Name.OREXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.OREXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYEQU,
+                    Token.Name.SPACE,
+                    Token.Name.EQUEXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SPACE,
+                    Token.Name.BINARYEQU
+                },
+                Token.Name.EQUEXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.ATOMEXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYAND,
+                    Token.Name.SPACE,
+                    Token.Name.ANDEXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SEMICOLON
+                },
+                Token.Name.ANDEXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.ANDEXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYOR,
+                    Token.Name.SPACE,
+                    Token.Name.OREXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SEMICOLON
+                },
+                Token.Name.OREXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.OREXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYEQU,
+                    Token.Name.SPACE,
+                    Token.Name.EQUEXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SEMICOLON
+                },
+                Token.Name.EQUEXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.ATOMEXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYAND,
+                    Token.Name.SPACE,
+                    Token.Name.ANDEXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.CLOSINGBRACKET
+                },
+                Token.Name.ANDEXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.ANDEXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYOR,
+                    Token.Name.SPACE,
+                    Token.Name.OREXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.CLOSINGBRACKET
+                },
+                Token.Name.OREXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.OREXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYEQU,
+                    Token.Name.SPACE,
+                    Token.Name.EQUEXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.CLOSINGBRACKET
+                },
+                Token.Name.EQUEXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.ATOMEXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYAND,
+                    Token.Name.SPACE,
+                    Token.Name.ANDEXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SPACE,
+                    Token.Name.THEN
+                },
+                Token.Name.ANDEXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.ANDEXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYOR,
+                    Token.Name.SPACE,
+                    Token.Name.OREXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SPACE,
+                    Token.Name.THEN
+                },
+                Token.Name.OREXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.OREXPRESSION,
+                    Token.Name.SPACE,
+                    Token.Name.BINARYEQU,
+                    Token.Name.SPACE,
+                    Token.Name.EQUEXPRESSION
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SPACE,
+                    Token.Name.THEN
+                },
+                Token.Name.EQUEXPRESSION),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.EQUEXPRESSION,
                     Token.Name.SPACE,
                     Token.Name.UNARYOP
                 },
@@ -248,7 +424,7 @@ namespace Lexer
             new Rule(
                 new Token.Name[]
                 {
-                    Token.Name.SUBEXPRESSION,
+                    Token.Name.EQUEXPRESSION,
                     Token.Name.SPACE,
                     Token.Name.UNARYOP
                 },
@@ -261,7 +437,7 @@ namespace Lexer
             new Rule(
                 new Token.Name[]
                 {
-                    Token.Name.SUBEXPRESSION,
+                    Token.Name.EQUEXPRESSION,
                     Token.Name.SPACE,
                     Token.Name.UNARYOP
                 },
@@ -275,7 +451,7 @@ namespace Lexer
             new Rule(
                 new Token.Name[]
                 {
-                    Token.Name.SUBEXPRESSION
+                    Token.Name.EQUEXPRESSION
                 },
                 new Token.Name[]
                 {
@@ -286,7 +462,7 @@ namespace Lexer
             new Rule(
                 new Token.Name[]
                 {
-                    Token.Name.SUBEXPRESSION
+                    Token.Name.EQUEXPRESSION
                 },
                 new Token.Name[]
                 {
@@ -297,7 +473,7 @@ namespace Lexer
             new Rule(
                 new Token.Name[]
                 {
-                    Token.Name.SUBEXPRESSION
+                    Token.Name.EQUEXPRESSION
                 },
                 new Token.Name[]
                 {
@@ -336,7 +512,31 @@ namespace Lexer
                 new Token.Name[]
                 {
                     Token.Name.SPACE,
-                    Token.Name.BINARYOP
+                    Token.Name.BINARYEQU
+                },
+                Token.Name.OPERAND),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.IDENT
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SPACE,
+                    Token.Name.BINARYOR
+                },
+                Token.Name.OPERAND),
+
+            new Rule(
+                new Token.Name[]
+                {
+                    Token.Name.IDENT
+                },
+                new Token.Name[]
+                {
+                    Token.Name.SPACE,
+                    Token.Name.BINARYAND
                 },
                 Token.Name.OPERAND),
 
@@ -406,6 +606,663 @@ namespace Lexer
                 Token.Name.CONDITION)
         };
 
+        private static readonly Token.Name[][] ShiftRules =
+        {
+            new Token.Name[]
+            {
+                Token.Name.LOGICAL,
+                Token.Name.SPACE,
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.BEGIN
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.BEGIN
+            },
+
+            new Token.Name[]
+            { 
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.READEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.WRITEEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.IF
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.ELSE
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.END
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.ENDIF
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SEMICOLON,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.COLON,
+                Token.Name.SPACE,
+                Token.Name.LOGICAL
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.COMMA,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ASSIGNMENTCHAR,
+                Token.Name.SPACE,
+                Token.Name.UNARYOP
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ASSIGNMENTCHAR,
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ASSIGNMENTCHAR,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ASSIGNMENTCHAR,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.OPENINGBRACKET,
+                Token.Name.UNARYOP
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.OPENINGBRACKET,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.OPENINGBRACKET,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.OPENINGBRACKET,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CLOSINGBRACKET,
+                Token.Name.SEMICOLON
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CLOSINGBRACKET,
+                Token.Name.SPACE,
+                Token.Name.BINARYEQU
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CLOSINGBRACKET,
+                Token.Name.SPACE,
+                Token.Name.BINARYOR
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CLOSINGBRACKET,
+                Token.Name.SPACE,
+                Token.Name.BINARYAND
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CLOSINGBRACKET,
+                Token.Name.SPACE,
+                Token.Name.THEN
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BEGIN,
+                Token.Name.SPACE,
+                Token.Name.READEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BEGIN,
+                Token.Name.SPACE,
+                Token.Name.WRITEEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BEGIN,
+                Token.Name.SPACE,
+                Token.Name.IF
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BEGIN,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.VAR,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.END
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.UNARYOP,
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.UNARYOP,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.UNARYOP,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYEQU,
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYEQU,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYEQU,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYEQU,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYOR,
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYOR,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYOR,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYOR,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYAND,
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYAND,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYAND,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.BINARYAND,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.READEX,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.WRITEEX,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IF,
+                Token.Name.SPACE,
+                Token.Name.UNARYOP
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IF,
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IF,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IF,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.THEN,
+                Token.Name.SPACE,
+                Token.Name.IF
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.THEN,
+                Token.Name.SPACE,
+                Token.Name.UNARYOP
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.THEN,
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.THEN,
+                Token.Name.SPACE,
+                Token.Name.WRITEEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.THEN,
+                Token.Name.SPACE,
+                Token.Name.READEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.THEN,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.THEN,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ELSE,
+                Token.Name.SPACE,
+                Token.Name.UNARYOP
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ELSE,
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ELSE,
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ELSE,
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ELSE,
+                Token.Name.SPACE,
+                Token.Name.IF
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ELSE,
+                Token.Name.SPACE,
+                Token.Name.WRITEEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ELSE,
+                Token.Name.SPACE,
+                Token.Name.READEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.ENDIF,
+                Token.Name.SEMICOLON
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IDENT,
+                Token.Name.COMMA
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IDENT,
+                Token.Name.SPACE,
+                Token.Name.ASSIGNMENTCHAR
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IDENT,
+                Token.Name.SPACE,
+                Token.Name.BINARYEQU
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IDENT,
+                Token.Name.SPACE,
+                Token.Name.BINARYOR
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IDENT,
+                Token.Name.SPACE,
+                Token.Name.BINARYAND
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IDENT,
+                Token.Name.SPACE,
+                Token.Name.COLON
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IDENT,
+                Token.Name.SEMICOLON
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.IDENT,
+                Token.Name.CLOSINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CONSTANT,
+                Token.Name.SPACE,
+                Token.Name.BINARYEQU
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CONSTANT,
+                Token.Name.SPACE,
+                Token.Name.BINARYOR
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CONSTANT,
+                Token.Name.SPACE,
+                Token.Name.BINARYAND
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CONSTANT,
+                Token.Name.SEMICOLON
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CONSTANT,
+                Token.Name.CLOSINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.BEGIN
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.READEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.WRITEEX
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.IF
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.IDENT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.END
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.SEMICOLON
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.LOGICAL
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.COLON
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.UNARYOP
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.OPENINGBRACKET
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.CONSTANT
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.BINARYEQU
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.BINARYOR
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.BINARYAND
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.THEN
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.ELSE
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.ENDIF
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.SPACE,
+                Token.Name.ASSIGNMENTCHAR
+            }
+        };
+
         public static Token Run(IEnumerable<Token> input)
         {
             var stack = new Stack<Token>();
@@ -418,7 +1275,7 @@ namespace Lexer
                         stack
                             .Take(rule.Stack.Length)
                             .Select(token => token.Type)
-                            .SequenceEqual(rule.Stack) &&
+                            .SequenceEqual(rule.Stack, comparePriority) &&
                         (rule.Input == null || queue
                             .Take(rule.Input.Length)
                             .Select(token => token.Type)
@@ -434,20 +1291,75 @@ namespace Lexer
                         return stack.Single();
                     }
 
-                    DebugWriteShift(queue.Peek());
-                    DebugWriteState(stack, queue);
+                    var shiftrule = ShiftRules
+                        .Where(rule =>
+                            queue
+                                .Take(rule.Length)
+                                .Select(token => token.Type)
+                                .SequenceEqual(rule))
+                        .FirstOrDefault();
 
-                    stack.Push(queue.Dequeue());
+                    if (shiftrule != null)
+                    {
+                        //DebugWriteShift(queue.Peek());
+                        //DebugWriteState(stack, queue);
+                        stack.Push(queue.Dequeue());
+                    }
+                    else {
+                        //DebugWriteState(stack, queue);
+
+                        string stackstr = stack
+                            .Select(token => token.Value)
+                            .Reverse()
+                            .Aggregate((p, c) => p + c);
+
+                        string skippedstr = string.Concat(stackstr
+                            .Reverse()
+                            .SkipWhile(c => c != '\n')
+                            .Reverse());
+
+                        string lastLine = skippedstr.Any() ? skippedstr : stackstr;
+
+                        int max = ShiftRules.Select(rulearr =>
+                        {
+                            IEnumerable<Token.Name> ruleenum = rulearr;
+                            IEnumerable<Token> queueenum = queue;
+
+                            int count = 0;
+
+                            while (ruleenum.First() == queueenum.First().Type)
+                            {
+                                ++count;
+                                ruleenum = ruleenum.Skip(1);
+                                queueenum = queueenum.Skip(1);
+                            }
+
+                            return count;
+
+                        }).Max();
+
+
+                        string correctqueue = string.Concat(queue.Take(max).Select(token => token.Value));
+                        string firstincorrect = queue.Skip(max).First().Value;
+
+                        throw new NoRuleException(
+                            lastLine + correctqueue + firstincorrect + " <\n" +
+                            "Символ до стрелки не ожидался в этой позиции");
+                    }
                 }
                 //reduce
                 else
                 {
-                    DebugWriteRule(rule.Value);
-                    DebugWriteState(stack, queue);
+                    //DebugWriteRule(rule.Value);
+                    //DebugWriteState(stack, queue);
 
                     var token = new Token(
                         rule.Value.Output,
-                        null,
+                        stack.
+                            Take(rule.Value.Stack.Length)
+                            .Select(token => token.Value)
+                            .Reverse()
+                            .Aggregate((accumulator, next) => accumulator + next),
                         new List<Token>(stack.Take(rule.Value.Stack.Length)));
 
                     for (int i = 0; i < rule.Value.Stack.Length; ++i)
@@ -460,6 +1372,8 @@ namespace Lexer
             }
         }
 
+        private static readonly ComparePriority comparePriority = new();
+            
         private static void DebugWriteState(IEnumerable<Token> stack, IEnumerable<Token> queue)
         {
             Console.Write("Stack: ");

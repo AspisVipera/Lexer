@@ -9,9 +9,26 @@ namespace Lexer
         static void Main(string[] args)
         {
             string input = Console.In.ReadToEnd().Replace("\r", "").TrimEnd();
-            List<Token> tokens = Lexer.Run(input);
-            Token syntaxTree = Parser.Run(tokens);
-            DrawTree(syntaxTree);
+
+            try
+            {
+                List<Token> tokens = Lexer.Run(input);
+                Token syntaxTree = Parser.Run(tokens);
+                //DrawTree(syntaxTree);
+                Evaluator.Eval(syntaxTree);
+            }
+            catch (UnknownSymbolException e)
+            {
+                Console.WriteLine(e.Message + " : неизвестный символ");
+            }
+            catch (NoRuleException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
 
         static void DrawTree(Token tree, int level = 0)

@@ -2,7 +2,7 @@
 
 namespace Lexer
 {
-    struct Token
+    public class Token
     {
         public enum Name
         {
@@ -39,10 +39,15 @@ namespace Lexer
             ASSIGNMENT,
             OPERATOR,
             EXPRESSION,
-            SUBEXPRESSION,
+            EQUEXPRESSION,
+            OREXPRESSION,
+            ANDEXPRESSION,
+            ATOMEXPRESSION,
             OPERAND,
             UNARYOP,
-            BINARYOP,
+            BINARYEQU,
+            BINARYOR,
+            BINARYAND,
             LETTER,
             READEX,
             WRITEEX,

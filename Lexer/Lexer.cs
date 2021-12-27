@@ -17,6 +17,12 @@ namespace Lexer
                 {
                     if (stack.Count != 0)
                     {
+                        if (stack.Count > 7)
+                        {
+                            Console.WriteLine(string.Concat(stack) + " переменная не может иметь длину более 8 символов.");
+                            throw new Exception();
+                        }
+
                         tokens.Add(ReduceLetterToken(string.Join("", stack.Reverse())));
                         stack.Clear();
                     }
@@ -50,9 +56,9 @@ namespace Lexer
                 "end" => Token.Name.END,
                 "logical" => Token.Name.LOGICAL,
                 "not" => Token.Name.UNARYOP,
-                "and" => Token.Name.BINARYOP,
-                "or" => Token.Name.BINARYOP,
-                "equ" => Token.Name.BINARYOP,
+                "and" => Token.Name.BINARYAND,
+                "or" => Token.Name.BINARYOR,
+                "equ" => Token.Name.BINARYEQU,
                 "read" => Token.Name.READEX,
                 "write" => Token.Name.WRITEEX,
                 "if" => Token.Name.IF,
@@ -62,11 +68,7 @@ namespace Lexer
                 _ => Token.Name.IDENT
             };
 
-            return new Token(
-                name, 
-                ((name == Token.Name.IDENT |
-                (name == Token.Name.UNARYOP) |
-                (name == Token.Name.BINARYOP)) ? value : null));
+            return new Token(name, value);
         }
 
         private static Token ReduceCharToken(char c)
@@ -85,10 +87,10 @@ namespace Lexer
                 ' ' => Token.Name.SPACE,
                 '\t' => Token.Name.SPACE,
                 '\n' => Token.Name.SPACE,
-                _ => throw new UnknownSymbolException()
+                _ => throw new UnknownSymbolException(c.ToString())
             };
 
-            return new Token(name, name == Token.Name.CONSTANT ? c.ToString() : null);
+            return new Token(name, c.ToString());
         }
     }
 }
