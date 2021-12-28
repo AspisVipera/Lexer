@@ -183,6 +183,11 @@ namespace Lexer
             Token subexpr = expression.Children
                     .Find(token => subexpressionkinds.Contains(token.Type));
 
+            if (expression.Children.Any(token => token.Type == Token.Name.UNARYOP))
+            {
+                return !EvalSubexpression(subexpr, vars);
+            }
+
             return EvalSubexpression(subexpr, vars);
         }
 

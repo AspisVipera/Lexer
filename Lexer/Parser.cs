@@ -29,7 +29,8 @@ namespace Lexer
                 { 
                     Token.Name.CALCDEFINITION,
                     Token.Name.SPACE,
-                    Token.Name.VARDEFINITION
+                    Token.Name.VARDEFINITION,
+                    Token.Name.I
                 },
                 null,
                 Token.Name.PROGRAM),
@@ -610,6 +611,12 @@ namespace Lexer
         {
             new Token.Name[]
             {
+                Token.Name.I,
+                Token.Name.VAR
+            },
+
+            new Token.Name[]
+            {
                 Token.Name.LOGICAL,
                 Token.Name.SPACE,
                 Token.Name.SEMICOLON,
@@ -743,6 +750,12 @@ namespace Lexer
             {
                 Token.Name.CLOSINGBRACKET,
                 Token.Name.SEMICOLON
+            },
+
+            new Token.Name[]
+            {
+                Token.Name.CLOSINGBRACKET,
+                Token.Name.CLOSINGBRACKET
             },
 
             new Token.Name[]
@@ -921,13 +934,15 @@ namespace Lexer
             new Token.Name[]
             {
                 Token.Name.READEX,
-                Token.Name.OPENINGBRACKET
+                Token.Name.OPENINGBRACKET,
+                Token.Name.IDENT
             },
 
             new Token.Name[]
             {
                 Token.Name.WRITEEX,
-                Token.Name.OPENINGBRACKET
+                Token.Name.OPENINGBRACKET,
+                Token.Name.IDENT
             },
 
             new Token.Name[]
@@ -1301,17 +1316,17 @@ namespace Lexer
 
                     if (shiftrule != null)
                     {
-                        //DebugWriteShift(queue.Peek());
-                        //DebugWriteState(stack, queue);
+                        DebugWriteShift(queue.Peek());
+                        DebugWriteState(stack, queue);
                         stack.Push(queue.Dequeue());
                     }
                     else {
-                        //DebugWriteState(stack, queue);
+                        DebugWriteState(stack, queue);
 
-                        string stackstr = stack
+                        string stackstr = stack.Any() ? stack
                             .Select(token => token.Value)
                             .Reverse()
-                            .Aggregate((p, c) => p + c);
+                            .Aggregate((p, c) => p + c) : "";
 
                         string skippedstr = string.Concat(stackstr
                             .Reverse()
@@ -1327,20 +1342,21 @@ namespace Lexer
 
                             int count = 0;
 
-                            while (ruleenum.First() == queueenum.First().Type)
+                            while (queueenum.Any() && queueenum.Any() && ruleenum.First() == queueenum.First().Type)
                             {
                                 ++count;
                                 ruleenum = ruleenum.Skip(1);
                                 queueenum = queueenum.Skip(1);
                             }
+                            
 
                             return count;
 
                         }).Max();
 
 
-                        string correctqueue = string.Concat(queue.Take(max).Select(token => token.Value));
-                        string firstincorrect = queue.Skip(max).First().Value;
+                        string correctqueue = queue.Any() ? string.Concat(queue.Take(max).Select(token => token.Value)) : "";
+                        string firstincorrect = queue.Skip(max).Any() ? queue.Skip(max).First().Value : "";
 
                         throw new NoRuleException(
                             lastLine + correctqueue + firstincorrect + " <\n" +
@@ -1350,8 +1366,8 @@ namespace Lexer
                 //reduce
                 else
                 {
-                    //DebugWriteRule(rule.Value);
-                    //DebugWriteState(stack, queue);
+                    DebugWriteRule(rule.Value);
+                    DebugWriteState(stack, queue);
 
                     var token = new Token(
                         rule.Value.Output,

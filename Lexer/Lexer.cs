@@ -11,6 +11,8 @@ namespace Lexer
             var tokens = new List<Token>();
             var stack = new Stack<char>();
 
+            tokens.Add(new Token(Token.Name.I, ""));
+
             foreach (char c in input)
             {
                 if (!char.IsLetter(c))

@@ -25,10 +25,10 @@ namespace Lexer
             {
                 Console.WriteLine(e.Message);
             }
-            catch (Exception e)
-            {
+            //catch (Exception e)
+            //{
                 
-            }
+            //}
         }
 
         static void DrawTree(Token tree, int level = 0)
